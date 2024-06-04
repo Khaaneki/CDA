@@ -1,0 +1,137 @@
+DROP DATABASE IF EXISTS Village_green;
+
+CREATE DATABASE Village_green;
+
+USE Village_green;
+
+CREATE TABLE rubrique(
+   Id_Rubrique INT AUTO_INCREMENT,
+   libelle_court VARCHAR(30)  NOT NULL,
+   libelle VARCHAR(100)  NOT NULL,
+   image VARCHAR(100) ,
+   PRIMARY KEY(Id_Rubrique)
+);
+
+CREATE TABLE sous_rubrique(
+   Id_sous_rubrique INT AUTO_INCREMENT,
+   libelle_court VARCHAR(30)  NOT NULL,
+   libelle VARCHAR(100)  NOT NULL,
+   image VARCHAR(100),
+   Id_Rubrique INT NOT NULL,
+   PRIMARY KEY(Id_sous_rubrique),
+   FOREIGN KEY(Id_Rubrique) REFERENCES rubrique(Id_Rubrique)
+);
+
+CREATE TABLE fournisseur(
+   numero_fournisseur VARCHAR(20),
+   nom VARCHAR(50)  NOT NULL,
+   adresse VARCHAR(200)  NOT NULL,
+   pays VARCHAR(30)  NOT NULL,
+   ville VARCHAR(50)  NOT NULL,
+   telephone VARCHAR(20)  NOT NULL,
+   code_postal VARCHAR(20)  NOT NULL,
+   PRIMARY KEY(numero_fournisseur)
+);
+
+CREATE TABLE utilisateur(
+   Id_utilisateur INT AUTO_INCREMENT,
+   nom VARCHAR(50)  NOT NULL,
+   prénom VARCHAR(50)  NOT NULL,
+   adresse VARCHAR(100)  NOT NULL,
+   code_postal VARCHAR(20)  NOT NULL,
+   pays VARCHAR(30)  NOT NULL,
+   ville VARCHAR(50)  NOT NULL,
+   telephone VARCHAR(20)  NOT NULL,
+   mail VARCHAR(100)  NOT NULL,
+   mot_de_passe VARCHAR(300)  NOT NULL,
+   reduction DECIMAL(5,2),
+   PRIMARY KEY(Id_utilisateur)
+);
+
+CREATE TABLE commande(
+   Id_commande INT AUTO_INCREMENT,
+   date_commande DATE NOT NULL,
+   montant_commande_HT DECIMAL(11,2)   NOT NULL,
+   montant_commande_TTC DECIMAL(11,2)   NOT NULL,
+   TVA DECIMAL(5,2),
+   Id_facture INT NOT NULL,
+   moyen_paiement VARCHAR(20)  NOT NULL,
+   adresse_facturation VARCHAR(100)  NOT NULL,
+   ville_facturation VARCHAR(50),
+   telephone_facturation VARCHAR(20),
+   mail_facturation VARCHAR(50),
+   etat_facture VARCHAR(20)  NOT NULL,
+   adresse_livraison VARCHAR(100)  NOT NULL,
+   etat_livraison VARCHAR(20)  NOT NULL,
+   Id_utilisateur INT NOT NULL,
+   PRIMARY KEY(Id_commande),
+   FOREIGN KEY(Id_utilisateur) REFERENCES utilisateur(Id_utilisateur)
+);
+
+CREATE TABLE article(
+Id_article INT AUTO_INCREMENT,
+libelle_court VARCHAR(30) NOT NULL,
+libelle VARCHAR(100) NOT NULL,
+image VARCHAR(100),
+prix_HT DECIMAL(10,2) NOT NULL,
+Id_sous_rubrique INT NOT NULL,
+PRIMARY KEY(Id_article),
+FOREIGN KEY(Id_sous_rubrique) REFERENCES sous_rubrique(Id_sous_rubrique)
+);
+
+CREATE TABLE personnel(
+matricule_personnel VARCHAR(30),
+nom VARCHAR(50),
+prenom VARCHAR(50) NOT NULL,
+adresse VARCHAR(100),
+telephone VARCHAR(50),
+mail VARCHAR(50) NOT NULL,
+mot_de_passe VARCHAR(300),
+service VARCHAR(20) NOT NULL,
+role VARCHAR(50) NOT NULL,
+code_postal VARCHAR(20) NOT NULL,
+PRIMARY KEY(matricule_personnel)
+);
+
+CREATE TABLE Bon_de_livraison(
+Id_livraison INT AUTO_INCREMENT,
+date_livraison DATE,
+nom_livreur VARCHAR(50) ,
+Id_commande INT NOT NULL,
+PRIMARY KEY(Id_livraison),
+FOREIGN KEY(Id_commande) REFERENCES commande(Id_commande)
+);
+
+CREATE TABLE fournit(
+numero_fournisseur VARCHAR(20),
+Id_article INT,
+PRIMARY KEY(numero_fournisseur, Id_article),
+FOREIGN KEY(numero_fournisseur) REFERENCES fournisseur(numero_fournisseur),
+FOREIGN KEY(Id_article) REFERENCES article(Id_article)
+);
+
+CREATE TABLE se_compose_de(
+Id_commande INT,
+Id_article INT,
+nombre_d_article INT,
+PRIMARY KEY(Id_commande, Id_article),
+FOREIGN KEY(Id_commande) REFERENCES commande(Id_commande),
+FOREIGN KEY(Id_article) REFERENCES article(Id_article)
+);
+
+CREATE TABLE encadre(
+Id_utilisateur INT,
+matricule_personnel VARCHAR(30) ,
+PRIMARY KEY(Id_utilisateur, matricule_personnel),
+FOREIGN KEY(Id_utilisateur) REFERENCES utilisateur(Id_utilisateur),
+FOREIGN KEY(matricule_personnel) REFERENCES personnel(matricule_personnel)
+);
+
+CREATE TABLE livre(
+Id_article INT,
+Id_livraison INT,
+quantité_livré INT,
+PRIMARY KEY(Id_article, Id_livraison),
+FOREIGN KEY(Id_article) REFERENCES article(Id_article),
+FOREIGN KEY(Id_livraison) REFERENCES Bon_de_livraison(Id_livraison)
+);

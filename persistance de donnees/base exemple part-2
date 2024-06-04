@@ -1,0 +1,44 @@
+1. SELECT e.prenom, d.noregion FROM employe e LEFT JOIN dept d ON e.nodep = d.nodept;
+
+2. SELECT e.nom, d.nom, e.nodep AS "Département" FROM employe e LEFT JOIN dept d ON e.nodep = d.nodept;
+
+3. SELECT e.nom, d.nom AS "Département" FROM employe e LEFT JOIN dept d ON e.nodep = d.nodept WHERE d.nom = "Distribution";
+
+4. SELECT p.nom, p.salaire, psup.nom AS 'nom_sup', psup.salaire AS 'salaire_sup' 
+FROM employe as psup LEFT OUTER JOIN employe AS p ON p.nosup = psup.noemp WHERE p.salaire > psup.salaire;
+
+5. SELECT nom, titre FROM employe WHERE titre = ( SELECT titre FROM employe WHERE nom = 'Amartakaldire');
+
+6.SELECT e.nom, e.salaire, e.nodep FROM employe e WHERE e.salaire > ANY (SELECT e2.salaire FROM employe e2 WHERE e.nodep = 31) ORDER BY e.nodep, e.salaire;
+
+7. SELECT e.nom AS nom, e.salaire AS salaire, e.nodep AS departement FROM employe e WHERE e.salaire > (SELECT MAX(salaire) FROM employe WHERE nodep = 31 )ORDER BY e.nodep, e.salaire;
+
+8. SELECT nom, titre FROM employe WHERE service = 31 AND titre IN (SELECT titre FROM employe WHERE service = 32);
+
+9. SELECT nom, titre FROM employe WHERE service = 31 AND titre NOT IN (SELECT titre FROM employe WHERE service = 32);
+
+10. SELECT e.nom, e.titre, e.salaire FROM employe e WHERE e.titre = (SELECT titre FROM employe WHERE nom = 'Fairent') AND e.salaire = (SELECT salaire FROM employe WHERE nom = 'Fairent');
+
+11. SELECT d.nodept, d.nom, e.nom FROM dept d LEFT JOIN employe e ON d.nodept = e.nodep ORDER BY d.nodept;
+
+12. SELECT titre, COUNT(nom) FROM employe GROUP BY titre;
+
+13. SELECT d.noregion, AVG(salaire) AS moyenne, SUM(salaire) AS somme FROM employe JOIN dept d GROUP BY noregion;
+
+14. SELECT nodep, COUNT(*) AS employe FROM employe GROUP BY nodep HAVING COUNT(*) >= 3;
+
+15. SELECT LEFT(nom, 1) AS initiale, COUNT(*) AS employe FROM employe GROUP BY LEFT(nom, 1) HAVING COUNT(*) >= 3;
+
+16. SELECT MAX(salaire) AS salaire_maximum, MIN(salaire) AS salaire_minimum, (MAX(salaire) - MIN(salaire)) AS ecart FROM employe;
+
+17. SELECT COUNT(DISTINCT titre) AS titre FROM employe;
+
+18. SELECT titre, COUNT(*) AS employe FROM employe GROUP BY titre ORDER BY titre;
+
+19. SELECT d.nom, COUNT(e.nom) AS employe FROM dept d LEFT JOIN employe e ON d.nodept = e.nodep GROUP BY d.nom ORDER BY d.nom;
+
+20. SELECT titre, AVG(salaire) AS moyenne FROM employe GROUP BY titre HAVING AVG(salaire) > (SELECT AVG(salaire) FROM employe WHERE titre = 'Représentant');
+
+21. SELECT COUNT(salaire) AS salaire, COUNT(tauxcom) AS tauxcom FROM employe;
+
+(4).SELECT e.nom AS employe_nom, e.salaire AS employe_salaire, p.nom AS patron_nom, p.salaire AS patron_salaire FROM employe AS e JOIN employe AS p ON e.id_patron = p.id WHERE e.salaire > p.salaire;

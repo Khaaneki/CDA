@@ -1,0 +1,172 @@
+1. 
+
+SELECT * FROM entcom WHERE numfou = 09120;
+
+2.
+
+SELECT e.numfou, l.* 
+FROM entcom e
+JOIN ligcom l ON e.numcom = l.numcom 
+GROUP BY numfou;
+
+3.
+
+SELECT count(numfou), COUNT(DISTINCT numfou) 
+FROM entcom;
+    
+4.
+
+SELECT p.codart, p.libart, p.stkphy, p.stkale, p.qteann
+FROM produit p
+WHERE p.stkphy <= p.stkale AND p.qteann < 1000;
+    
+5.
+
+SELECT 
+    CASE
+        WHEN LEFT(posfou, 2) = '75' THEN '75'
+        WHEN LEFT(posfou, 2) = '78' THEN '78'
+        WHEN LEFT(posfou, 2) = '92' THEN '92'
+        WHEN LEFT(posfou, 2) = '77' THEN '77'
+    END AS posfou,
+    nomfou
+FROM 
+    fournis
+WHERE 
+    LEFT(posfou, 2) IN ('75', '78', '92', '77')
+ORDER BY 
+    posfou DESC, 
+    nomfou ASC;
+
+6.
+
+SELECT * FROM entcom e WHERE MONTH(e.datcom) IN (03, 04);
+
+7.
+
+SELECT e.numcom, e.datcom
+FROM entcom e
+WHERE e.obscom != "";
+
+8.
+
+SELECT l.numcom, (l.qtecde * l.priuni) AS total
+FROM ligcom l
+ORDER BY total DESC;
+
+9.
+
+SELECT l.numcom, (l.qtecde * l.priuni) AS total
+FROM ligcom l
+WHERE l.qtecde < 1000 AND (l.qtecde * l.priuni) > 10000
+ORDER BY total DESC;
+
+10.
+
+SELECT f.nomfou, l.numcom, e.datcom 
+FROM entcom e
+JOIN ligcom l ON l.numcom = e.numcom
+JOIN fournis f ON f.numfou = e.numfou;
+
+11.
+
+SELECT l.numcom, f.nomfou, p.libart, (l.qtecde * l.priuni)
+FROM entcom e
+JOIN ligcom l ON l.numcom = e.numcom
+JOIN fournis f ON f.numfou = e.numfou
+JOIN produit p ON p.codart = l.codart
+WHERE e.obscom LIKE '%urgente';
+
+12.
+
+SELECT DISTINCT f.nomfou
+FROM entcom e, ligcom l, fournis f
+WHERE l.numcom = e.numcom
+  AND f.numfou = e.numfou
+  AND e.numfou IS NOT NULL;
+  
+SELECT DISTINCT f.nomfou
+FROM entcom e
+JOIN ligcom l ON l.numcom = e.numcom
+JOIN fournis f ON f.numfou = e.numfou
+WHERE e.numfou IS NOT NULL;
+
+13.
+
+SELECT e.numcom, e.datcom
+FROM entcom e
+JOIN ligcom l ON l.numcom = e.numcom
+WHERE e.numfou IN (SELECT numfou FROM e WHERE numcom = 70210);
+
+SELECT DISTINCT e.numcom, e.datcom
+FROM entcom e
+JOIN entcom AS e70210 ON e.numfou = e70210.numfou
+WHERE e70210.numcom = 70210;
+
+14.
+
+T p.libart, v.prix1 
+FROM produit p
+JOIN vente v ON v.codart = p.codart
+WHERE SUBSTRING(p.codart, 1, 1) != 'r'
+AND v.prix1 < (
+    SELECT MIN(v1.prix1)
+    FROM vente v1
+    JOIN produit p1 ON p1.codart = v1.codart
+    WHERE SUBSTRING(p1.codart, 1, 1) = 'r'
+);
+
+15.
+
+SELECT DISTINCT f.nomfou, p.libart
+FROM fournis f
+JOIN entcom e ON e.numfou = f.numfou
+JOIN ligcom l ON l.numcom = e.numcom
+JOIN produit p ON p.codart = l.codart
+WHERE p.stkphy <= (1.50 * p.stkale)
+ORDER BY p.libart ASC, f.nomfou ASC;
+
+16.
+
+SELECT f.nomfou, p.libart
+FROM fournis f
+JOIN entcom e ON e.numfou = f.numfou
+JOIN ligcom l ON l.numcom = e.numcom
+JOIN produit p ON p.codart = l.codart
+WHERE p.stkphy <= (1.50 * p.stkale) 
+AND DATEDIFF(l.derliv, e.datcom) <= 30
+ORDER BY f.nomfou ASC, p.libart ASC;
+
+17.
+
+SELECT f.nomfou, p.libart
+FROM fournis f
+JOIN entcom e ON e.numfou = f.numfou
+JOIN ligcom l ON l.numcom = e.numcom
+JOIN produit p ON p.codart = l.codart
+WHERE p.stkphy <= (1.50 * p.stkale) 
+AND DATEDIFF(l.derliv, e.datcom) <= 30
+GROUP BY f.nomfou
+ORDER BY MAX(l.qtecde) DESC;
+
+18.
+
+SELECT f.nomfou, p.libart
+FROM fournis f
+JOIN entcom e ON e.numfou = f.numfou
+JOIN ligcom l ON l.numcom = e.numcom
+JOIN produit p ON p.codart = l.codart
+WHERE l.qtecde > (0.9 * p.qteann);
+
+19.
+
+SELECT f.nomfou, 
+SUM((v.qte1 * v.prix1 + v.qte2 * v.prix2 + v.qte3 * v.prix3) * 1.2) AS 'total CA'
+FROM fournis f
+JOIN entcom e ON e.numfou = f.numfou
+JOIN ligcom l ON l.numcom = e.numcom
+JOIN produit p ON p.codart = l.codart
+JOIN vente v ON v.codart = p.codart
+GROUP BY f.nomfou;
+
+20.

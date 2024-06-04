@@ -1,0 +1,34 @@
+1.
+
+DROP VIEW IF EXISTS v_article_fournisseur;
+
+CREATE VIEW v_article_fournisseur AS
+SELECT 
+    f.numero_fournisseur,
+    fo.nom,
+    a.libelle_court,
+    a.prix_HT
+    
+FROM 
+    article a
+JOIN 
+    fournit f ON a.Id_article = f.Id_article
+JOIN 
+    fournisseur fo ON f.numero_fournisseur = fo.numero_fournisseur;
+
+2.
+//pas complet
+DROP VIEW IF EXISTS v_article_categorie;
+
+CREATE VIEW v_article_categorie AS
+SELECT 
+    a.libelle_court,
+    a.prix_HT,
+    r.libelle,
+    s.libelle_court AS famille
+FROM 
+    article a
+JOIN 
+    sous_rubrique s ON a.Id_sous_rubrique = s.Id_sous_rubrique
+JOIN 
+    rubrique r ON s.Id_Rubrique = r.Id_Rubrique;

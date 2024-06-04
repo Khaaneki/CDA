@@ -1,0 +1,70 @@
+1.
+
+DROP PROCEDURE IF EXISTS Lst_fournis;
+
+DELIMITER |
+
+CREATE PROCEDURE Lst_fournis()
+BEGIN
+    SELECT e.numfou, l.*
+    FROM entcom e
+    JOIN ligcom l ON e.numcom = l.numcom
+    GROUP BY e.numfou;
+END |
+
+DELIMITER ;
+
+CALL lst_fournis;
+
+SHOW CREATE PROCEDURE Lst_fournis;
+
+2.
+
+DROP PROCEDURE IF EXISTS Lst_commandes;
+
+DELIMITER |
+
+CREATE PROCEDURE Lst_Commandes(IN observation VARCHAR(50))
+BEGIN
+    SELECT l.numcom, f.nomfou, p.libart, (l.qtecde * l.priuni) AS total
+    FROM entcom e
+    JOIN ligcom l ON l.numcom = e.numcom
+    JOIN fournis f ON f.numfou = e.numfou
+    JOIN produit p ON p.codart = l.codart
+    WHERE e.obscom = observation;
+END |
+
+DELIMITER ;
+
+SHOW CREATE PROCEDURE Lst_Commandes;
+
+3.
+
+DELIMITER |
+
+CREATE PROCEDURE CA_Fournisseur(
+    IN fournisseur INT,
+    IN annee YEAR
+)
+BEGIN
+    DECLARE fournisseur_existe INT;
+
+    SELECT COUNT(*) INTO fournisseur_existe FROM fournis WHERE numfou = fournisseur;
+
+    IF fournisseur_existe = 0 THEN
+        SIGNAL SQLSTATE '40000'
+        SET MESSAGE_TEXT = 'Le numéro de fournisseur spécifié n''existe pas.';
+    ELSE
+    
+        SELECT f.nomfou, SUM((v.qte1 * v.prix1 + v.qte2 * v.prix2 + v.qte3 * v.prix3) * 1.2) AS total_CA
+        FROM fournis f
+        JOIN entcom e ON e.numfou = f.numfou
+        JOIN ligcom l ON l.numcom = e.numcom
+        JOIN produit p ON p.codart = l.codart
+        JOIN vente v ON v.codart = p.codart
+        WHERE f.numfou = fournisseur AND YEAR(e.datcom) = annee
+        GROUP BY f.nomfou;
+    END IF;
+END |
+
+DELIMITER ;

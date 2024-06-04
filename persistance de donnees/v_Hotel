@@ -1,0 +1,105 @@
+DROP VIEW v_nomvue
+
+1. HOTEL/STATION
+
+DROP VIEW IF EXISTS v_hotel_station;
+CREATE VIEW v_hotel_station AS
+SELECT
+    h.capacite_hotel,
+    h.categorie_hotel,
+    h.nom_hotel,
+    h.adresse_hotel,
+    h.num_hotel,
+    s.num_station,
+    s.nom_station
+FROM
+    hotel h
+JOIN
+    station s ON h.num_station = s.num_station;
+    
+SELECT * FROM v_hotel_station;
+
+2. CHAMBRE/HOTEL 
+
+DROP VIEW IF EXISTS v_chambre_hotel;
+CREATE VIEW v_chambre_hotel AS
+SELECT
+    c.num_chambre,
+    c.capacite_chambre,
+    c.type_chambre,
+    h.num_hotel,
+    h.nom_hotel
+FROM
+    chambre c
+JOIN
+    hotel h ON c.num_hotel = h.num_hotel;
+    
+SELECT * FROM v_chambre_hotel;
+
+3. RESERVATION/CLIENT
+
+DROP VIEW IF EXISTS v_reservation_client;
+CREATE VIEW v_reservation_client AS
+SELECT
+    r.num_chambre,
+    r.num_client,
+    r.date_debut,
+    r.date_fin,
+    r.date_reservation,
+    r.montant_arrhes,
+    r.prix_total,
+    c.nom_client,
+    c.prenom_client
+FROM
+    reservation r
+JOIN
+    client c ON c.num_client = r.num_client;
+
+SELECT * FROM v_reservation_client;
+
+4. CHAMBRE/HOTEL/STATION
+
+DROP VIEW IF EXISTS v_c_h_s;
+CREATE VIEW v_c_h_s AS
+SELECT
+    c.num_chambre,
+    c.capacite_chambre,
+    c.degre_confort,
+    c.exposition,
+    c.type_chambre,
+    h.num_hotel,
+    h.nom_hotel
+FROM
+    chambre c
+JOIN
+    hotel h ON c.num_hotel = h.num_hotelv_c_h_s
+JOIN
+    station s ON h.num_station = s.num_station;
+   
+SELECT * FROM v_c_h_s;
+
+5. RESERVATION/CLIENT/HOTEL
+
+DROP VIEW IF EXISTS v_r_c_h;
+CREATE VIEW v_r_c_h AS
+SELECT
+    r.num_chambre,
+    r.num_client,
+    r.date_debut,
+    r.date_fin,
+    r.date_reservation,
+    r.montant_arrhes,
+    r.prix_total,
+    c.nom_client,
+    c.prenom_client,
+    h.nom_hotel
+FROM
+    reservation r
+JOIN
+    client c ON r.num_client = c.num_client
+JOIN
+    chambre ch ON r.num_chambre = ch.num_chambre
+JOIN
+    hotel h ON ch.num_hotel = h.num_hotel;
+    
+SELECT FROM* v_r_c_h;

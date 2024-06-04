@@ -1,0 +1,51 @@
+1.
+
+La transaction echoue et affiche un message d'erreur car les instructions ne sont pas terminees par un point-virgule De plus il n'y a pas de commit ou de rolleback pour confirmer ou annuler la transaction
+
+START TRANSACTION;
+
+SELECT nomfou FROM fournis WHERE numfou=120;
+
+UPDATE fournis  SET nomfou= 'GROSBRIGAND' WHERE numfou=120 
+
+SELECT nomfou FROM fournis WHERE numfou=120 
+
+2.
+
+Oui les donnees peuvent etre modifier par d'autre utilisateur si les autorisation le permettent
+
+SELECT nomfou FROM fournis WHERE numfou = 120;
+
+3.
+
+Non la transaction n'est pas terminee quand on interroge la base de donnee la modification n'est pas prise en compte
+
+SELECT nomfou FROM fournis WHERE numfou = 120;
+
+4.
+
+Pour rendre la transaction permanente on fait : 
+
+START TRANSACTION;
+
+SELECT nomfou FROM fournis WHERE numfou = 120;
+
+UPDATE fournis SET nomfou = 'GROSBRIGAND' WHERE numfou = 120;
+
+SELECT nomfou FROM fournis WHERE numfou = 120;
+
+COMMIT;
+
+5.
+
+Pour annuler la transaction on effectue un rolleback
+
+START TRANSACTION;
+
+SELECT nomfou FROM fournis WHERE numfou = 120;
+
+UPDATE fournis SET nomfou = 'GROSBRIGAND' WHERE numfou = 120;
+
+SELECT nomfou FROM fournis WHERE numfou = 120;
+
+ROLLBACK;

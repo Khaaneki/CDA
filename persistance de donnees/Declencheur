@@ -1,0 +1,79 @@
+1.
+
+USE Hotel;
+ALTER TABLE reservation ENGINE = InnoDB;
+
+DELIMITER |
+CREATE TRIGGER modif_reservation BEFORE UPDATE ON reservation
+FOR EACH ROW
+BEGIN
+    SIGNAL SQLSTATE '40000' SET MESSAGE_TEXT = 'Modification des réservations interdit';
+END;
+|
+DELIMITER ;
+
+2.
+
+DELIMITER |
+CREATE TRIGGER insert_reservation BEFORE INSERT ON reservation
+FOR EACH ROW
+BEGIN
+    DECLARE hotel_count INT;
+    DECLARE hotel_id INT;
+
+SELECT num_hotel INTO hotel_id
+    FROM chambre
+    WHERE num_chambre = NEW.num_chambre;
+
+SELECT COUNT(*) INTO hotel_count
+    FROM reservation
+    WHERE num_chambre IN (SELECT num_chambre FROM chambre WHERE num_hotel = hotel_id);
+
+    IF hotel_count >= 10 THEN
+        SIGNAL SQLSTATE '40000' SET MESSAGE_TEXT ='Nombre de réservation maximal atteint';
+    END IF;
+END;
+|
+DELIMITER ;
+
+3.
+
+CREATE TRIGGER insert_reservation2 BEFOR INSERT ON reservation
+FOR EACH ROW
+BEGIN
+    DECLARE client_count INT;
+    DECLARE client_id INT;
+
+SELECT num_client INTO client_id
+    FROM client
+    WHERE num_client = NEW.num_client;
+
+SELECT COUNT(*) INTO client_count
+    FROM reservation
+    WHERE num_client = client_id;
+
+    IF client_count >= 3 THEN
+        SIGNAL SQLSTATE '40000' SET MESSAGE_TEXT ='Nombre de réservation maximal atteint pour le client';
+    END IF;
+END;
+|
+Delimiter ;
+
+4.
+
+DELIMITER |
+CREATE TRIGGER insert_chambre BEFORE INSERT ON chambre
+FOR EACH ROW
+BEGIN
+    DECLARE capacite_total INT;
+
+    SELECT SUM(capacite_chambre) INTO capacite_total
+    FROM chambre
+    WHERE num_chambre = NEW.num_chambre;
+
+    IF capacite_total + NEW.capacite_chambre > 50 THEN
+        SIGNAL SQLSTATE '40000' SET MESSAGE_TEXT ='La capacité des chambres pour cet hôtel dépasse 50 chambres';
+    END IF;
+END;
+|
+DELIMITER ;

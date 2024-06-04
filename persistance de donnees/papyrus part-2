@@ -1,0 +1,35 @@
+1.
+
+UPDATE vente
+SET prix1 = prix1 * 1.04,
+    prix2 = prix2 * 1.02
+WHERE numfou = 9180;
+
+2.
+
+UPDATE vente
+SET prix2 = prix1
+WHERE prix2 = 0;
+
+3.
+
+UPDATE entcom
+JOIN fournis ON fournis.numfou = entcom.numfou
+SET entcom.obscom = '*****'
+WHERE fournis.satisf < 5;
+
+4.
+
+DELETE FROM vente
+WHERE codart = 'I110';
+
+DELETE FROM produit
+WHERE codart = 'I110';
+
+5.
+
+DELETE FROM ligcom
+WHERE numcom IN (SELECT numcom FROM entcom WHERE obscom = "");
+
+DELETE FROM entcom
+WHERE obscom = "";
